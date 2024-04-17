@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:week_number/iso.dart';
 
 import 'date_picker_mixin.dart';
 import 'day_type.dart';
@@ -73,7 +74,13 @@ class DayBasedPicker<T> extends StatelessWidget with CommonDatePickerFunctions {
 
     List<Widget> headers = _buildHeaders(localizations, context);
     List<Widget> daysBeforeMonthStart = _buildCellsBeforeStart(localizations);
-    List<Widget> monthDays = _buildMonthCells(localizations);
+    List<Widget> monthDays = _buildMonthCells(
+      localizations,
+      datePickerLayoutSettings,
+      datePickerStyles,
+      firstDate,
+      lastDate,
+    );
     List<Widget> daysAfterMonthEnd = _buildCellsAfterEnd(localizations);
 
     labels.addAll(headers);
@@ -173,12 +180,36 @@ class DayBasedPicker<T> extends StatelessWidget with CommonDatePickerFunctions {
     return result;
   }
 
-  List<Widget> _buildMonthCells(MaterialLocalizations localizations) {
+  List<Widget> _buildMonthCells(
+    MaterialLocalizations localizations,
+    DatePickerLayoutSettings datePickerLayoutSettings,
+    DatePickerStyles datePickerStyles,
+    DateTime firstDate,
+    DateTime lastDate,
+  ) {
     List<Widget> result = [];
 
     final int year = displayedMonth.year;
     final int month = displayedMonth.month;
     final int daysInMonth = DatePickerUtils.getDaysInMonth(year, month);
+
+    if (datePickerLayoutSettings.weekToDisplay != null) {
+      final DateTime dateFromWeekNumber =
+          dateTimeFromWeekNumber(year, datePickerLayoutSettings.weekToDisplay!);
+
+      final DateTime newFirstDate = dateFromWeekNumber;
+
+      for (int i = 1; i <= 7; i += 1) {
+        Widget dayWidget = _buildCell(
+          newFirstDate.year,
+          newFirstDate.month,
+          newFirstDate.day + i - 1,
+        );
+        result.add(dayWidget);
+      }
+
+      return result;
+    }
 
     for (int i = 1; i <= daysInMonth; i += 1) {
       Widget dayWidget = _buildCell(year, month, i);

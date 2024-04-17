@@ -42,6 +42,9 @@ class DatePickerLayoutSettings {
   ///
   final int maxDayPickerRowCount;
 
+  ///
+  final int? weekToDisplay;
+
   /// Padding for the entire picker.
   final EdgeInsetsGeometry contentPadding;
 
@@ -94,6 +97,7 @@ class DatePickerLayoutSettings {
     this.showNextMonthStart = false,
     this.showPrevMonthEnd = false,
     this.hideMonthNavigationRow = false,
+    this.weekToDisplay,
     this.scrollPhysics,
   });
 }
