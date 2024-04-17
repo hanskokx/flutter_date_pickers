@@ -18,7 +18,6 @@ class RangePickerPage extends StatefulWidget {
 }
 
 class _RangePickerPageState extends State<RangePickerPage> {
-
   final DateTime _firstDate = DateTime.now().subtract(Duration(days: 3450));
   final DateTime _lastDate = DateTime.now().add(Duration(days: 345));
 
@@ -87,7 +86,7 @@ class _RangePickerPageState extends State<RangePickerPage> {
               children: <Widget>[
                 Text(
                   "Selected date styles",
-                  style: Theme.of(context).textTheme.subtitle1,
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
                 _stylesBlock(),
                 _selectedBlock()

@@ -217,7 +217,7 @@ class _YearPickerState<T extends Object> extends State<YearPicker<T>> {
       // No MaterialLocalizations or Directionality or Locale was found
       // and ".of" method throws error
       // trying to cast null to MaterialLocalizations.
-    } on TypeError catch (_) {}
+    } on Exception catch (_) {}
   }
 
   @override

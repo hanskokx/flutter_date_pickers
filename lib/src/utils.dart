@@ -1,4 +1,7 @@
+// ignore_for_file: avoid_classes_with_only_static_members
+
 /// Bunch of useful functions for date pickers.
+
 class DatePickerUtils {
   /// Returns if two objects have same year, month and day.
   /// Time doesn't matter.
