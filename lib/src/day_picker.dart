@@ -11,40 +11,43 @@ import 'utils.dart';
 
 /// Date picker for selection one day.
 class DayPicker<T extends Object> extends StatelessWidget {
-  DayPicker._(
-      {Key? key,
-      required this.onChanged,
-      required this.firstDate,
-      required this.lastDate,
-      required this.selectionLogic,
-      required this.selection,
-      this.initiallyShowDate,
-      this.datePickerLayoutSettings = const DatePickerLayoutSettings(),
-      this.datePickerStyles,
-      this.datePickerKeys,
-      this.selectableDayPredicate,
-      this.eventDecorationBuilder,
-      this.onMonthChanged})
-      : super(key: key);
+  DayPicker._({
+    Key? key,
+    required this.onChanged,
+    required this.firstDate,
+    required this.lastDate,
+    required this.selectionLogic,
+    required this.selection,
+    this.initiallyShowDate,
+    this.datePickerLayoutSettings = const DatePickerLayoutSettings(),
+    this.datePickerStyles,
+    this.datePickerKeys,
+    this.selectableDayPredicate,
+    this.eventDecorationBuilder,
+    this.onMonthChanged,
+    this.onWeekChanged,
+  }) : super(key: key);
 
   /// Creates a day picker where only one single day can be selected.
   ///
   /// See also:
   /// * [DayPicker.multi] - day picker where many single days can be selected.
-  static DayPicker<DateTime> single(
-      {Key? key,
-      required DateTime selectedDate,
-      required ValueChanged<DateTime> onChanged,
-      required DateTime firstDate,
-      required DateTime lastDate,
-      DatePickerLayoutSettings datePickerLayoutSettings =
-          const DatePickerLayoutSettings(),
-      DateTime? initiallyShowDate,
-      DatePickerRangeStyles? datePickerStyles,
-      DatePickerKeys? datePickerKeys,
-      SelectableDayPredicate? selectableDayPredicate,
-      EventDecorationBuilder? eventDecorationBuilder,
-      ValueChanged<DateTime>? onMonthChanged}) {
+  static DayPicker<DateTime> single({
+    Key? key,
+    required DateTime selectedDate,
+    required ValueChanged<DateTime> onChanged,
+    required DateTime firstDate,
+    required DateTime lastDate,
+    DatePickerLayoutSettings datePickerLayoutSettings =
+        const DatePickerLayoutSettings(),
+    DateTime? initiallyShowDate,
+    DatePickerRangeStyles? datePickerStyles,
+    DatePickerKeys? datePickerKeys,
+    SelectableDayPredicate? selectableDayPredicate,
+    EventDecorationBuilder? eventDecorationBuilder,
+    ValueChanged<DateTime>? onMonthChanged,
+    ValueChanged<DateTime>? onWeekChanged,
+  }) {
     final startOfTheFirstDate = DatePickerUtils.startOfTheDay(firstDate);
     final endOfTheLastDate = DatePickerUtils.endOfTheDay(lastDate);
     final startOfTheSelectedDate = DatePickerUtils.startOfTheDay(selectedDate);
@@ -78,6 +81,7 @@ class DayPicker<T extends Object> extends StatelessWidget {
       selection: selection,
       eventDecorationBuilder: eventDecorationBuilder,
       onMonthChanged: onMonthChanged,
+      onWeekChanged: onWeekChanged,
       selectableDayPredicate: selectableDayPredicate,
       datePickerKeys: datePickerKeys,
       datePickerStyles: datePickerStyles,
@@ -90,20 +94,22 @@ class DayPicker<T extends Object> extends StatelessWidget {
   /// See also:
   /// * [DayPicker.single] - day picker where only one single day
   /// can be selected.
-  static DayPicker<List<DateTime>> multi(
-      {Key? key,
-      required List<DateTime> selectedDates,
-      required ValueChanged<List<DateTime>> onChanged,
-      required DateTime firstDate,
-      required DateTime lastDate,
-      DatePickerLayoutSettings datePickerLayoutSettings =
-          const DatePickerLayoutSettings(),
-      DateTime? initiallyShowDate,
-      DatePickerRangeStyles? datePickerStyles,
-      DatePickerKeys? datePickerKeys,
-      SelectableDayPredicate? selectableDayPredicate,
-      EventDecorationBuilder? eventDecorationBuilder,
-      ValueChanged<DateTime>? onMonthChanged}) {
+  static DayPicker<List<DateTime>> multi({
+    Key? key,
+    required List<DateTime> selectedDates,
+    required ValueChanged<List<DateTime>> onChanged,
+    required DateTime firstDate,
+    required DateTime lastDate,
+    DatePickerLayoutSettings datePickerLayoutSettings =
+        const DatePickerLayoutSettings(),
+    DateTime? initiallyShowDate,
+    DatePickerRangeStyles? datePickerStyles,
+    DatePickerKeys? datePickerKeys,
+    SelectableDayPredicate? selectableDayPredicate,
+    EventDecorationBuilder? eventDecorationBuilder,
+    ValueChanged<DateTime>? onMonthChanged,
+    ValueChanged<DateTime>? onWeekChanged,
+  }) {
     final startOfTheFirstDate = DatePickerUtils.startOfTheDay(firstDate);
     final endOfTheLastDate = DatePickerUtils.endOfTheDay(lastDate);
     final startOfTheInitiallyShowDate = initiallyShowDate == null
@@ -136,6 +142,7 @@ class DayPicker<T extends Object> extends StatelessWidget {
       selection: selection,
       eventDecorationBuilder: eventDecorationBuilder,
       onMonthChanged: onMonthChanged,
+      onWeekChanged: onWeekChanged,
       selectableDayPredicate: selectableDayPredicate,
       datePickerKeys: datePickerKeys,
       datePickerStyles: datePickerStyles,
@@ -185,6 +192,10 @@ class DayPicker<T extends Object> extends StatelessWidget {
   /// New DateTime object represents first day of new month and 00:00 time.
   final ValueChanged<DateTime>? onMonthChanged;
 
+  // Called when the user changes the week.
+  /// New DateTime object represents first day of new week and 00:00 time.
+  final ValueChanged<DateTime>? onWeekChanged;
+
   /// Logic to handle user's selections.
   final ISelectablePicker<T> selectionLogic;
 
@@ -203,6 +214,7 @@ class DayPicker<T extends Object> extends StatelessWidget {
       datePickerKeys: datePickerKeys,
       eventDecorationBuilder: eventDecorationBuilder,
       onMonthChanged: onMonthChanged,
+      onWeekChanged: onWeekChanged,
     );
   }
 }

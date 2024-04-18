@@ -30,6 +30,9 @@ class DayBasedPicker<T> extends StatelessWidget with CommonDatePickerFunctions {
   /// The month whose days are displayed by this picker.
   final DateTime displayedMonth;
 
+  /// The week whose days are displayed by this picker.
+  final DateTime? displayedWeek;
+
   /// Layout settings what can be customized by user
   final DatePickerLayoutSettings datePickerLayoutSettings;
 
@@ -63,6 +66,7 @@ class DayBasedPicker<T> extends StatelessWidget with CommonDatePickerFunctions {
     required this.datePickerStyles,
     required this.selectablePicker,
     required this.localizations,
+    this.displayedWeek,
     this.selectedPeriodKey,
     this.eventDecorationBuilder,
   })  : assert(!firstDate.isAfter(lastDate)),
@@ -193,9 +197,10 @@ class DayBasedPicker<T> extends StatelessWidget with CommonDatePickerFunctions {
     final int month = displayedMonth.month;
     final int daysInMonth = DatePickerUtils.getDaysInMonth(year, month);
 
-    if (datePickerLayoutSettings.weekToDisplay != null) {
-      final DateTime dateFromWeekNumber =
-          dateTimeFromWeekNumber(year, datePickerLayoutSettings.weekToDisplay!);
+    if (datePickerLayoutSettings.weekToDisplay != null &&
+        displayedWeek != null) {
+      final DateTime dateFromWeekNumber = dateTimeFromWeekNumber(
+          displayedWeek!.year, datePickerLayoutSettings.weekToDisplay!);
 
       final DateTime newFirstDate = dateFromWeekNumber;
 

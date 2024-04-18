@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_classes_with_only_static_members
 
+import 'package:week_number/iso.dart';
+
 /// Bunch of useful functions for date pickers.
 
 class DatePickerUtils {
@@ -15,6 +17,12 @@ class DatePickerUtils {
   static bool sameMonth(DateTime dateTimeOne, DateTime dateTimeTwo) =>
       dateTimeOne.year == dateTimeTwo.year &&
       dateTimeOne.month == dateTimeTwo.month;
+
+  /// Returns if two objects have same year and month.
+  /// Day and time don't matter/
+  static bool sameWeek(DateTime dateTimeOne, DateTime dateTimeTwo) =>
+      dateTimeOne.year == dateTimeTwo.year &&
+      dateTimeOne.weekNumber == dateTimeTwo.weekNumber;
 
   // Do not use this directly - call getDaysInMonth instead.
   static const List<int> _daysInMonth = <int>[
@@ -50,10 +58,28 @@ class DatePickerUtils {
   static int monthDelta(DateTime startDate, DateTime endDate) =>
       (endDate.year - startDate.year) * 12 + endDate.month - startDate.month;
 
+  /// Returns number of weeks between [startDate] and [endDate]
+  static int weekDelta(DateTime startDate, DateTime endDate) {
+    final int startYear = startDate.year;
+    final int endYear = endDate.year;
+
+    final int startWeek = startDate.weekNumber;
+    final int endWeek = endDate.weekNumber;
+
+    final int delta =
+        (((endYear - startYear) * 12) ~/ 52) + (endWeek - startWeek);
+
+    return delta;
+  }
+
   /// Add months to a month truncated date.
   static DateTime addMonthsToMonthDate(DateTime monthDate, int monthsToAdd) =>
       // year is switched automatically if new month > 12
       DateTime(monthDate.year, monthDate.month + monthsToAdd);
+
+  /// Add weeks to a week truncated date.
+  static DateTime addWeeksToWeekDate(DateTime weekDate, int weeksToAdd) =>
+      dateTimeFromWeekNumber(weekDate.year, weekDate.weekNumber + weeksToAdd);
 
   /// Returns number of years between [startDate] and [endDate]
   static int yearDelta(DateTime startDate, DateTime endDate) =>

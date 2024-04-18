@@ -67,6 +67,9 @@ class DayBasedChangeablePicker<T> extends StatefulWidget {
   /// Called when the user changes the month
   final ValueChanged<DateTime>? onMonthChanged;
 
+  /// Called when the user changes the week
+  final ValueChanged<DateTime>? onWeekChanged;
+
   /// Create picker with option to change month.
   DayBasedChangeablePicker({
     Key? key,
@@ -82,6 +85,7 @@ class DayBasedChangeablePicker<T> extends StatefulWidget {
     this.onSelectionError,
     this.eventDecorationBuilder,
     this.onMonthChanged,
+    this.onWeekChanged,
   })  : initiallyShowDate =
             _getInitiallyShownDate(initiallyShownDate, selection),
         super(key: key);
@@ -245,18 +249,38 @@ class _DayBasedChangeablePickerState<T>
         });
   }
 
-  Widget _buildDayPickerPageView() => PageView.builder(
-        controller: _dayPickerController,
-        scrollDirection: Axis.horizontal,
-        itemCount:
-            DatePickerUtils.monthDelta(widget.firstDate, widget.lastDate) + 1,
-        itemBuilder: _buildCalendar,
-        onPageChanged: _handleMonthPageChanged,
-      );
+  Widget _buildDayPickerPageView() {
+    final bool changeWeek =
+        widget.datePickerLayoutSettings.weekToDisplay != null;
 
+    final int weekDelta =
+        DatePickerUtils.weekDelta(widget.firstDate, widget.lastDate) + 1;
+    final int monthDelta =
+        DatePickerUtils.monthDelta(widget.firstDate, widget.lastDate) + 1;
+
+    return PageView.builder(
+      controller: _dayPickerController,
+      scrollDirection: Axis.horizontal,
+      itemCount: changeWeek ? weekDelta : monthDelta,
+      itemBuilder: _buildCalendar,
+      onPageChanged: _handlePageChanged,
+    );
+  }
+
+//MARK: Building calendar
   Widget _buildCalendar(BuildContext context, int index) {
-    final DateTime targetDate =
-        DatePickerUtils.addMonthsToMonthDate(widget.firstDate, index);
+    final bool changeWeek =
+        widget.datePickerLayoutSettings.weekToDisplay != null;
+
+    final int weekDelta =
+        DatePickerUtils.weekDelta(widget.firstDate, widget.lastDate) + 1;
+
+    final DateTime targetWeek =
+        DatePickerUtils.addWeeksToWeekDate(widget.firstDate, weekDelta - index);
+
+    final DateTime targetDate = changeWeek
+        ? targetWeek
+        : DatePickerUtils.addMonthsToMonthDate(widget.firstDate, index);
 
     return DayBasedPicker(
       key: ValueKey<DateTime>(targetDate),
@@ -265,6 +289,7 @@ class _DayBasedChangeablePickerState<T>
       firstDate: widget.firstDate,
       lastDate: widget.lastDate,
       displayedMonth: targetDate,
+      displayedWeek: targetDate,
       datePickerLayoutSettings: widget.datePickerLayoutSettings,
       selectedPeriodKey: widget.datePickerKeys?.selectedPeriodKeys,
       datePickerStyles: _resultStyles,
@@ -293,6 +318,12 @@ class _DayBasedChangeablePickerState<T>
     final initialDate = _getCheckedInitialDate();
     int initPage = DatePickerUtils.monthDelta(widget.firstDate, initialDate);
 
+    final bool changeWeek =
+        widget.datePickerLayoutSettings.weekToDisplay != null;
+    if (changeWeek) {
+      initPage = DatePickerUtils.weekDelta(widget.firstDate, initialDate);
+    }
+
     return initPage;
   }
 
@@ -319,7 +350,25 @@ class _DayBasedChangeablePickerState<T>
     });
   }
 
+//MARK: State changes
   void _onStateChanged(DayBasedChangeablePickerState newState) {
+    final bool changeWeek =
+        widget.datePickerLayoutSettings.weekToDisplay != null;
+
+    if (changeWeek) {
+      DateTime newWeek = newState.currentWeek;
+      final int weekDelta =
+          DatePickerUtils.weekDelta(widget.initiallyShowDate, newWeek).abs();
+
+      // final bool isPrevious = newState.currentWeek.isBefore(
+      //     DatePickerUtils.addWeeksToWeekDate(
+      //         widget.initiallyShowDate, weekDelta));
+
+      _dayPickerController.animateToPage(weekDelta,
+          duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
+      return;
+    }
+
     DateTime newMonth = newState.currentMonth;
     final int monthPage =
         DatePickerUtils.monthDelta(widget.firstDate, newMonth);
@@ -327,9 +376,22 @@ class _DayBasedChangeablePickerState<T>
         duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
   }
 
-  void _handleMonthPageChanged(int monthPage) {
-    DateTime firstMonth = widget.firstDate;
-    DateTime newMonth = DateTime(firstMonth.year, firstMonth.month + monthPage);
+  void _handlePageChanged(int page) {
+    DateTime firstDate = widget.firstDate;
+
+    final bool changeWeek =
+        widget.datePickerLayoutSettings.weekToDisplay != null;
+
+    if (changeWeek) {
+      DateTime newWeek =
+          DatePickerUtils.addWeeksToWeekDate(widget.initiallyShowDate, page);
+      _presenter.changeWeek(widget.initiallyShowDate, newWeek);
+      widget.onWeekChanged?.call(newWeek);
+      return;
+    }
+
+    DateTime newMonth = DateTime(firstDate.year, firstDate.month + page);
+
     _presenter.changeMonth(newMonth);
 
     widget.onMonthChanged?.call(newMonth);

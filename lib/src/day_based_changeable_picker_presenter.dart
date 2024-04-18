@@ -105,14 +105,74 @@ class DayBasedChangeablePickerPresenter {
         isLastMonth ? null : "${localizations.nextMonthTooltip} $nextMonthStr";
 
     DayBasedChangeablePickerState newState = DayBasedChangeablePickerState(
-        currentMonth: curMonth,
-        curMonthDis: curMonthStr,
-        prevMonthDis: prevMonthStr,
-        nextMonthDis: nextMonthStr,
-        prevTooltip: prevTooltip,
-        nextTooltip: nextTooltip,
-        isFirstMonth: isFirstMonth,
-        isLastMonth: isLastMonth);
+      currentMonth: curMonth,
+      currentWeek: curMonth,
+      curMonthDis: curMonthStr,
+      prevMonthDis: prevMonthStr,
+      nextMonthDis: nextMonthStr,
+      prevTooltip: prevTooltip,
+      nextTooltip: nextTooltip,
+      isFirstMonth: isFirstMonth,
+      isLastMonth: isLastMonth,
+      isFirstWeek: isFirstMonth,
+      isLastWeek: isLastMonth,
+    );
+
+    _updateState(newState);
+  }
+
+  /// Update state to change week to the [newWeek].
+  void changeWeek(DateTime initialDate, DateTime newWeek) {
+    DateTime previousWeek = _lastVal?.currentWeek ?? initialDate;
+
+    final bool lastValIsMoreThanAWeekAgo =
+        previousWeek.difference(initialDate).abs().inDays >
+            DateTime.daysPerWeek;
+
+    if (lastValIsMoreThanAWeekAgo) {
+      previousWeek =
+          initialDate.subtract(Duration(days: DateTime.daysPerWeek + 1));
+    }
+
+    int weekPage = DatePickerUtils.weekDelta(firstDate, newWeek);
+
+    DateTime curWeek = DatePickerUtils.addWeeksToWeekDate(firstDate, weekPage);
+
+    final bool sameWeek = DatePickerUtils.sameWeek(previousWeek, newWeek);
+    if (sameWeek) return;
+
+    DateTime nextWeek = DatePickerUtils.addWeeksToWeekDate(curWeek, 1);
+
+    String prevMonthStr = localizations.formatMonthYear(previousWeek);
+    String curMonthStr = localizations.formatMonthYear(curWeek);
+    String nextMonthStr = localizations.formatMonthYear(nextWeek);
+
+    bool isFirstWeek = DatePickerUtils.sameWeek(curWeek, firstDate);
+    bool isLastWeek = DatePickerUtils.sameWeek(curWeek, lastDate);
+
+    bool isFirstMonth = DatePickerUtils.sameMonth(curWeek, firstDate);
+    bool isLastMonth = DatePickerUtils.sameMonth(curWeek, lastDate);
+
+    String? prevTooltip = isFirstWeek
+        ? null
+        : "${localizations.previousMonthTooltip} $prevMonthStr";
+
+    String? nextTooltip =
+        isLastWeek ? null : "${localizations.nextMonthTooltip} $nextMonthStr";
+
+    DayBasedChangeablePickerState newState = DayBasedChangeablePickerState(
+      currentMonth: curWeek,
+      currentWeek: curWeek,
+      curMonthDis: curMonthStr,
+      prevMonthDis: prevMonthStr,
+      nextMonthDis: nextMonthStr,
+      prevTooltip: prevTooltip,
+      nextTooltip: nextTooltip,
+      isFirstMonth: isFirstMonth,
+      isLastMonth: isLastMonth,
+      isFirstWeek: isFirstWeek,
+      isLastWeek: isLastWeek,
+    );
 
     _updateState(newState);
   }
@@ -153,11 +213,20 @@ class DayBasedChangeablePickerState {
   /// Tooltip for the current month icon.
   final DateTime currentMonth;
 
+  /// Tooltip for the current week icon.
+  final DateTime currentWeek;
+
   /// If selected month is the month contains last date user can select.
   final bool isLastMonth;
 
   /// If selected month is the month contains first date user can select.
   final bool isFirstMonth;
+
+  /// If selected week is the week contains last date user can select.
+  final bool isLastWeek;
+
+  /// If selected week is the week contains first date user can select.
+  final bool isFirstWeek;
 
   /// Creates view model for the [DayBasedChangeablePicker].
   DayBasedChangeablePickerState({
@@ -165,8 +234,11 @@ class DayBasedChangeablePickerState {
     required this.prevMonthDis,
     required this.nextMonthDis,
     required this.currentMonth,
+    required this.currentWeek,
     required this.isLastMonth,
     required this.isFirstMonth,
+    required this.isLastWeek,
+    required this.isFirstWeek,
     this.prevTooltip,
     this.nextTooltip,
   });
