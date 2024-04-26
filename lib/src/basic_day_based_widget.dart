@@ -12,7 +12,7 @@ import 'utils.dart';
 
 /// Widget for date pickers based on days and cover entire month.
 /// Each cell of this picker is day.
-class DayBasedPicker<T> extends StatelessWidget with CommonDatePickerFunctions {
+class DayBasedPicker<T> extends StatefulWidget with CommonDatePickerFunctions {
   /// Selection logic.
   final ISelectablePicker selectablePicker;
 
@@ -73,19 +73,31 @@ class DayBasedPicker<T> extends StatelessWidget with CommonDatePickerFunctions {
         super(key: key);
 
   @override
+  State<DayBasedPicker<T>> createState() => _DayBasedPickerState<T>();
+}
+
+class _DayBasedPickerState<T> extends State<DayBasedPicker<T>> {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    widget.selectablePicker.onDayTapped(widget.currentDate);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final List<Widget> labels = <Widget>[];
 
-    List<Widget> headers = _buildHeaders(localizations, context);
-    List<Widget> daysBeforeMonthStart = _buildCellsBeforeStart(localizations);
+    List<Widget> headers = _buildHeaders(widget.localizations, context);
+    List<Widget> daysBeforeMonthStart =
+        _buildCellsBeforeStart(widget.localizations);
     List<Widget> monthDays = _buildMonthCells(
-      localizations,
-      datePickerLayoutSettings,
-      datePickerStyles,
-      firstDate,
-      lastDate,
+      widget.localizations,
+      widget.datePickerLayoutSettings,
+      widget.datePickerStyles,
+      widget.firstDate,
+      widget.lastDate,
     );
-    List<Widget> daysAfterMonthEnd = _buildCellsAfterEnd(localizations);
+    List<Widget> daysAfterMonthEnd = _buildCellsAfterEnd(widget.localizations);
 
     labels.addAll(headers);
     labels.addAll(daysBeforeMonthStart);
@@ -93,13 +105,14 @@ class DayBasedPicker<T> extends StatelessWidget with CommonDatePickerFunctions {
     labels.addAll(daysAfterMonthEnd);
 
     return Padding(
-      padding: datePickerLayoutSettings.contentPadding,
+      padding: widget.datePickerLayoutSettings.contentPadding,
       child: Column(
         children: <Widget>[
           Flexible(
             child: GridView.custom(
-              physics: datePickerLayoutSettings.scrollPhysics,
-              gridDelegate: datePickerLayoutSettings.dayPickerGridDelegate,
+              physics: widget.datePickerLayoutSettings.scrollPhysics,
+              gridDelegate:
+                  widget.datePickerLayoutSettings.dayPickerGridDelegate,
               childrenDelegate:
                   SliverChildListDelegate(labels, addRepaintBoundaries: false),
             ),
@@ -113,16 +126,17 @@ class DayBasedPicker<T> extends StatelessWidget with CommonDatePickerFunctions {
     MaterialLocalizations localizations,
     BuildContext context,
   ) {
-    final int firstDayOfWeekIndex = datePickerStyles.firstDayOfeWeekIndex ??
-        localizations.firstDayOfWeekIndex;
+    final int firstDayOfWeekIndex =
+        widget.datePickerStyles.firstDayOfeWeekIndex ??
+            localizations.firstDayOfWeekIndex;
 
     DayHeaderStyleBuilder dayHeaderStyleBuilder =
-        datePickerStyles.dayHeaderStyleBuilder ??
+        widget.datePickerStyles.dayHeaderStyleBuilder ??
             // ignore: avoid_types_on_closure_parameters
-            (int i) => datePickerStyles.dayHeaderStyle;
+            (int i) => widget.datePickerStyles.dayHeaderStyle;
 
     final weekdayTitles = _getWeekdayTitles(context);
-    List<Widget> headers = getDayHeaders(
+    List<Widget> headers = widget.getDayHeaders(
       dayHeaderStyleBuilder,
       weekdayTitles,
       firstDayOfWeekIndex,
@@ -139,11 +153,11 @@ class DayBasedPicker<T> extends StatelessWidget with CommonDatePickerFunctions {
     final fullLocalizedWeekdayHeaders =
         intl.DateFormat.E(curLocale.toLanguageTag()).dateSymbols.WEEKDAYS;
 
-    final narrowLocalizedWeekdayHeaders = localizations.narrowWeekdays;
+    final narrowLocalizedWeekdayHeaders = widget.localizations.narrowWeekdays;
 
     final weekdayTitles =
         List.generate(fullLocalizedWeekdayHeaders.length, (dayOfWeek) {
-      final builtHeader = datePickerStyles.dayHeaderTitleBuilder
+      final builtHeader = widget.datePickerStyles.dayHeaderTitleBuilder
           ?.call(dayOfWeek, fullLocalizedWeekdayHeaders);
       final result = builtHeader ?? narrowLocalizedWeekdayHeaders[dayOfWeek];
 
@@ -156,14 +170,15 @@ class DayBasedPicker<T> extends StatelessWidget with CommonDatePickerFunctions {
   List<Widget> _buildCellsBeforeStart(MaterialLocalizations localizations) {
     List<Widget> result = [];
 
-    final int year = displayedMonth.year;
-    final int month = displayedMonth.month;
-    final int firstDayOfWeekIndex = datePickerStyles.firstDayOfeWeekIndex ??
-        localizations.firstDayOfWeekIndex;
+    final int year = widget.displayedMonth.year;
+    final int month = widget.displayedMonth.month;
+    final int firstDayOfWeekIndex =
+        widget.datePickerStyles.firstDayOfeWeekIndex ??
+            localizations.firstDayOfWeekIndex;
     final int firstDayOffset =
-        computeFirstDayOffset(year, month, firstDayOfWeekIndex);
+        widget.computeFirstDayOffset(year, month, firstDayOfWeekIndex);
 
-    final bool showDates = datePickerLayoutSettings.showPrevMonthEnd;
+    final bool showDates = widget.datePickerLayoutSettings.showPrevMonthEnd;
     if (showDates) {
       int prevMonth = month - 1;
       if (prevMonth < 1) prevMonth = 12;
@@ -193,14 +208,14 @@ class DayBasedPicker<T> extends StatelessWidget with CommonDatePickerFunctions {
   ) {
     List<Widget> result = [];
 
-    final int year = displayedMonth.year;
-    final int month = displayedMonth.month;
+    final int year = widget.displayedMonth.year;
+    final int month = widget.displayedMonth.month;
     final int daysInMonth = DatePickerUtils.getDaysInMonth(year, month);
 
     if (datePickerLayoutSettings.weekToDisplay != null &&
-        displayedWeek != null) {
+        widget.displayedWeek != null) {
       final DateTime dateFromWeekNumber = dateTimeFromWeekNumber(
-          displayedWeek!.year, datePickerLayoutSettings.weekToDisplay!);
+          widget.displayedWeek!.year, datePickerLayoutSettings.weekToDisplay!);
 
       final DateTime newFirstDate = dateFromWeekNumber;
 
@@ -226,15 +241,16 @@ class DayBasedPicker<T> extends StatelessWidget with CommonDatePickerFunctions {
 
   List<Widget> _buildCellsAfterEnd(MaterialLocalizations localizations) {
     List<Widget> result = [];
-    final bool showDates = datePickerLayoutSettings.showNextMonthStart;
+    final bool showDates = widget.datePickerLayoutSettings.showNextMonthStart;
     if (!showDates) return result;
 
-    final int year = displayedMonth.year;
-    final int month = displayedMonth.month;
-    final int firstDayOfWeekIndex = datePickerStyles.firstDayOfeWeekIndex ??
-        localizations.firstDayOfWeekIndex;
+    final int year = widget.displayedMonth.year;
+    final int month = widget.displayedMonth.month;
+    final int firstDayOfWeekIndex =
+        widget.datePickerStyles.firstDayOfeWeekIndex ??
+            localizations.firstDayOfWeekIndex;
     final int firstDayOffset =
-        computeFirstDayOffset(year, month, firstDayOfWeekIndex);
+        widget.computeFirstDayOffset(year, month, firstDayOfWeekIndex);
     final int daysInMonth = DatePickerUtils.getDaysInMonth(year, month);
     final int totalFilledDays = firstDayOffset + daysInMonth;
 
@@ -254,22 +270,22 @@ class DayBasedPicker<T> extends StatelessWidget with CommonDatePickerFunctions {
     DateTime dayToBuild = DateTime(year, month, day);
     dayToBuild = _checkDateTime(dayToBuild);
 
-    DayType dayType = selectablePicker.getDayType(dayToBuild);
+    DayType dayType = widget.selectablePicker.getDayType(dayToBuild);
 
     Widget dayWidget = _DayCell(
       day: dayToBuild,
-      currentDate: currentDate,
-      selectablePicker: selectablePicker,
-      datePickerStyles: datePickerStyles,
-      contentMargin: datePickerLayoutSettings.cellContentMargin,
-      eventDecorationBuilder: eventDecorationBuilder,
-      localizations: localizations,
+      currentDate: widget.currentDate,
+      selectablePicker: widget.selectablePicker,
+      datePickerStyles: widget.datePickerStyles,
+      contentMargin: widget.datePickerLayoutSettings.cellContentMargin,
+      eventDecorationBuilder: widget.eventDecorationBuilder,
+      localizations: widget.localizations,
     );
 
     if (dayType != DayType.disabled) {
       dayWidget = GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: () => selectablePicker.onDayTapped(dayToBuild),
+        onTap: () => widget.selectablePicker.onDayTapped(dayToBuild),
         child: dayWidget,
       );
     }
@@ -277,16 +293,20 @@ class DayBasedPicker<T> extends StatelessWidget with CommonDatePickerFunctions {
     return dayWidget;
   }
 
+  // ignore: comment_references
   /// Checks if [DateTime] is same day as [lastDate] or [firstDate]
+  // ignore: comment_references
   /// and returns dt corrected (with time of [lastDate] or [firstDate]).
   DateTime _checkDateTime(DateTime dt) {
     DateTime result = dt;
 
     // If dayToBuild is the first day we need to save original time for it.
-    if (DatePickerUtils.sameDate(dt, firstDate)) result = firstDate;
+    if (DatePickerUtils.sameDate(dt, widget.firstDate)) {
+      result = widget.firstDate;
+    }
 
     // If dayToBuild is the last day we need to save original time for it.
-    if (DatePickerUtils.sameDate(dt, lastDate)) result = lastDate;
+    if (DatePickerUtils.sameDate(dt, widget.lastDate)) result = widget.lastDate;
 
     return result;
   }
