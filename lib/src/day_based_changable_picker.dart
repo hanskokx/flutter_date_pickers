@@ -165,6 +165,8 @@ class _DayBasedChangeablePickerState<T>
 
     final ThemeData theme = Theme.of(context);
     _resultStyles = widget.datePickerStyles.fulfillWithTheme(theme);
+
+    widget.selectablePicker.onDayTapped(widget.selection.earliest);
   }
 
   @override
