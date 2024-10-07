@@ -1,5 +1,7 @@
 /// Bunch of useful functions for date pickers.
 class DatePickerUtils {
+  DatePickerUtils._internal();
+
   /// Returns if two objects have same year, month and day.
   /// Time doesn't matter.
   static bool sameDate(DateTime dateTimeOne, DateTime dateTimeTwo) =>

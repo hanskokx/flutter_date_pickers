@@ -45,18 +45,18 @@ class MonthNavigationRow extends StatelessWidget {
   final Widget? title;
 
   /// Creates month navigation row.
-  const MonthNavigationRow({
-    Key? key,
-    this.previousPageIconKey,
-    this.nextPageIconKey,
-    this.onNextMonthTapped,
-    this.onPreviousMonthTapped,
-    this.nextMonthTooltip,
-    this.previousMonthTooltip,
-    this.title,
-    required this.nextIcon,
-    required this.prevIcon
-  }) : super(key: key);
+  const MonthNavigationRow(
+      {Key? key,
+      this.previousPageIconKey,
+      this.nextPageIconKey,
+      this.onNextMonthTapped,
+      this.onPreviousMonthTapped,
+      this.nextMonthTooltip,
+      this.previousMonthTooltip,
+      this.title,
+      required this.nextIcon,
+      required this.prevIcon})
+      : super(key: key);
 
   @override
   // ignore: prefer_expression_function_bodies
