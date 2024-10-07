@@ -47,8 +47,8 @@ void main() {
         final middlePeriodDateType = selectableLogic.getDayType(date);
         expect(middlePeriodDateType, DayType.middle,
             reason: "Incorrect DayType for the date ${date.toString()} "
-                "in period ${startPeriod.toString()} "
-                "- ${endPeriod.toString()}");
+                "in period "
+                "${startPeriod.toString()} - ${endPeriod.toString()}");
       }
     });
   });

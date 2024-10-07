@@ -87,3 +87,6 @@ linter:
     unnecessary_null_in_if_null_operators: true
     unrelated_type_equality_checks: true
     valid_regexps: true
+analyzer:
+  errors:
+    comment_references: ignore

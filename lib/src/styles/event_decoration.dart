@@ -4,7 +4,6 @@ import '../day_picker.dart';
 import '../range_picker.dart';
 import '../week_picker.dart';
 
-
 /// Signature for function which is used to set set specific decoration for
 /// some days in [DayPicker], [WeekPicker] and [RangePicker].
 ///
@@ -14,11 +13,9 @@ import '../week_picker.dart';
 /// * [RangePicker.eventDecorationBuilder]
 typedef EventDecorationBuilder = EventDecoration? Function(DateTime date);
 
-
 /// Class to store styles for event (specific day in the date picker).
 @immutable
 class EventDecoration {
-
   /// Cell decoration for the specific day in the date picker (event).
   final BoxDecoration? boxDecoration;
 

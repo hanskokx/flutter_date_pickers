@@ -1,6 +1,6 @@
 /// Bunch of useful functions for date pickers.
 class DatePickerUtils {
-  DatePickerUtils._();
+  DatePickerUtils._internal();
 
   /// Returns if two objects have same year, month and day.
   /// Time doesn't matter.
