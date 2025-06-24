@@ -90,9 +90,13 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       body: datePickers[_selectedTab],
       bottomNavigationBar: Theme(
         data: Theme.of(context).copyWith(
-            canvasColor: Colors.blueGrey,
-            textTheme: Theme.of(context).textTheme.copyWith(
-                bodySmall: TextStyle(color: Colors.white.withOpacity(0.5)))),
+          canvasColor: Colors.blueGrey,
+          textTheme: Theme.of(context).textTheme.copyWith(
+                bodySmall: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.5),
+                ),
+              ),
+        ),
         child: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
           items: [
